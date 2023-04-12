@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/growupanand/test-gh-actions/issues"
   },
-  "homepage": "https://github.com/growupanand/test-gh-actions#readme"
+  "homepage": "https://github.com/growupanand/test-gh-actions#readme",
+  "devDependencies": {
+    "jest": "^29.5.0"
+  }
 }
