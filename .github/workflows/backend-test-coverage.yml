@@ -15,8 +15,17 @@ jobs:
         run: npm install
 
       - name: Run tests and generate coverage report
-        run: npm test -- --coverage
+        run: npm test
 
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+      
+      - name: Check minimum test coverage percentage
+        run: |
+          pct=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          echo "Current test coverage: $pct"
+          if (( pct < 150 )); then
+            echo "Test coverage is less than 150%"
+            exit 1
+
