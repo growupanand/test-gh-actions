@@ -28,4 +28,8 @@ jobs:
           if (( pct < 150 )); then
             echo "Test coverage is less than 150%"
             exit 1
+      
+      - name: Final List files in the repository
+        run: |
+            ls ${{ github.workspace }}
 
