@@ -38,7 +38,10 @@ jobs:
         with:
           name: test-results
           path: coverage/coverage-summary.json
+      
 
+      - name: Install dependencies
+        run: npm install @actions/core octokit
 
       - name: Update language tab
         uses: actions/github-script@v4
