@@ -83,18 +83,13 @@ jobs:
       #         core.setFailed(`Language tab update failed with error: ${error}`);
 
 
-      - name: Add custom topics
-        uses: peter-evans/repository-dispatch@v1
+      - name: Update repository topics
+        uses: andymckay/github-action@master
         with:
-          token: ${{ secrets.REPO_DISPATCH_TOKEN }}
-          repository: myorg/myrepo
-          event-type: add-custom-topics
-          client-payload: '{"topics": ["topic1", "topic2", "topic3"]}'
-
-      - name: Update language topics
-        uses: ahmadawais/create-repo-topics@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          method: PUT
+          endpoint: repos/${{ github.repository }}/topics
+          data: '{"names": ["topic1", "topic2", "topic3"]}'
             
 
 
