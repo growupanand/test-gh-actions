@@ -32,4 +32,37 @@ jobs:
       - name: Final List files in the repository
         run: |
             ls ${{ github.workspace }}
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: junit.xml
+
+
+      - name: Update language tab
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const results = fs.readFileSync('junit.xml', 'utf8');
+            await github.repos.createOrUpdateTopics({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              names: ['jest', 'tests'],
+            });
+            await github.repos.replaceTopics({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              names: ['jest', 'tests'],
+            });
+            await github.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'test-results.xml',
+              message: 'Update test results',
+              content: Buffer.from(results).toString('base64'),
+            });
+
 
