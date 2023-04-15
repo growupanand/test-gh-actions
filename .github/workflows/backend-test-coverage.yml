@@ -6,6 +6,7 @@ on:
 
 jobs:
   test:
+    permissions: "write-all"
     runs-on: ubuntu-latest
 
     steps:
@@ -38,30 +39,55 @@ jobs:
         with:
           name: test-results
           path: coverage/coverage-summary.json
+      
 
+      # - name: Install dependencies
+      #   run: npm install @actions/core octokit
 
-      - name: Update language tab
-        uses: actions/github-script@v4
+      # - name: Update language tab
+      #   uses: actions/github-script@v4
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const { Octokit } = require('@octokit/core');
+      #       const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+      #       const testCoverageJSON = require("./coverage/coverage-summary.json");
+      #       const totalCoverage = testCoverageJSON.total.lines.pct;
+      #       const owner = process.env.GITHUB_REPOSITORY_OWNER;
+      #       const repo = process.env.GITHUB_REPOSITORY_NAME;
+      #       try {
+      #         await octokit.request('POST /repos/{owner}/{repo}/topics', {
+      #           "names": [
+      #             "jest",
+      #             "tests"
+      #           ]
+      #         });
+      #         await octokit.request('POST /repos/{owner}/{repo}/topics', {
+      #           owner: owner,
+      #           repo: repo,
+      #           names: ['jest', 'tests'],
+      #         });
+      #         await octokit.request('PUT /repos/{owner}/{repo}/topics', {
+      #           owner: owner,
+      #           repo: repo,
+      #           names: ['jest', 'tests'],
+      #         });
+      #         await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+      #           owner: owner,
+      #           repo: repo,
+      #           path: 'test-results.xml',
+      #           message: 'Update test results',
+      #           content: totalCoverage,
+      #         });
+      #         core.info('Language tab updated successfully!');
+      #       } catch (error) {
+      #         core.setFailed(`Language tab update failed with error: ${error}`);
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            pct=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
-            await github.repos.createOrUpdateTopics({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              names: ['jest', 'tests'],
-            });
-            await github.repos.replaceTopics({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              names: ['jest', 'tests'],
-            });
-            await github.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: 'test-results.xml',
-              message: 'Update test results',
-              content: pct,
-            });
+          name: coverage
+          path: './coverage'
+            
 
 
