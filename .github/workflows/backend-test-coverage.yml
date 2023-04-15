@@ -89,8 +89,8 @@ jobs:
         run: |
           const axios = require('axios');
           console.log({
-          "github.repository" : { github.repository },
-          "secrets.GITHUB_TOKEN" : { secrets.GITHUB_TOKEN }
+          "github.repository" : ${{ github.repository }},
+          "secrets.GITHUB_TOKEN" : secrets.GITHUB_TOKEN
           })
           axios.put('https://api.github.com/repos/${{ github.repository }}/topics', { names: ['topic1', 'topic2', 'topic3'] }, {
             headers: {
