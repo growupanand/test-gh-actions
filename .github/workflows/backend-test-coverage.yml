@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: junit.xml
+          path: coverage/coverage-summary.json
 
 
       - name: Update language tab
@@ -45,8 +45,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const results = fs.readFileSync('junit.xml', 'utf8');
+            pct=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
             await github.repos.createOrUpdateTopics({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -62,7 +61,7 @@ jobs:
               repo: context.repo.repo,
               path: 'test-results.xml',
               message: 'Update test results',
-              content: Buffer.from(results).toString('base64'),
+              content: pct,
             });
 
 
