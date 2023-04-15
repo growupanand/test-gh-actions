@@ -84,12 +84,21 @@ jobs:
 
 
       - name: Update repository topics
-        uses: andymckay/github-action@master
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          method: PUT
-          endpoint: repos/${{ github.repository }}/topics
-          data: '{"names": ["topic1", "topic2", "topic3"]}'
+        run: |
+          npm install axios
+          axios.put('https://api.github.com/repos/${{ github.repository }}/topics', { names: ['topic1', 'topic2', 'topic3'] }, {
+            headers: {
+              Accept: 'application/vnd.github.mercy-preview+json',
+              Authorization: `Bearer ${{ secrets.GITHUB_TOKEN }}`
+            }
+          })
+          .then(response => {
+            console.log('Repository topics updated successfully.')
+          })
+          .catch(error => {
+            console.error('Error updating repository topics:', error.response.data.message)
+            process.exit(1)
+          })
             
 
 
