@@ -45,24 +45,34 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const core = require('@actions/core');
+            const { Octokit } = require('@octokit/core');
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
             const testCoverageJSON = require("./coverage/coverage-summary.json");
             const totalCoverage = testCoverageJSON.total.lines.pct;
-            await github.repos.createOrUpdateTopics({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              names: ['jest', 'tests'],
-            });
-            await github.repos.replaceTopics({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              names: ['jest', 'tests'],
-            });
-            await github.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: 'test-results.xml',
-              message: 'Update test results',
-              content: totalCoverage,
-            });
+            const owner = process.env.GITHUB_REPOSITORY_OWNER;
+            const repo = process.env.GITHUB_REPOSITORY_NAME;
+            try {
+              await octokit.request('POST /repos/{owner}/{repo}/topics', {
+                owner: owner,
+                repo: repo,
+                names: ['jest', 'tests'],
+              });
+              await octokit.request('PUT /repos/{owner}/{repo}/topics', {
+                owner: owner,
+                repo: repo,
+                names: ['jest', 'tests'],
+              });
+              await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+                owner: owner,
+                repo: repo,
+                path: 'test-results.xml',
+                message: 'Update test results',
+                content: totalCoverage,
+              });
+              core.info('Language tab updated successfully!');
+            } catch (error) {
+              core.setFailed(`Language tab update failed with error: ${error}`);
+            }
 
 
