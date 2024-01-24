@@ -1,0 +1,27 @@
+name: Generate Gource Video
+
+on: [push]
+
+jobs:
+  gource:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # fetch the full history
+      
+    - name: Install Gource
+      run: sudo apt-get install -y gource ffmpeg
+
+    # - name: Generate Gource video
+    #   run: |
+    #     mkdir output
+    #     gource --output-ppm-stream - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 output/gource.mp4
+      
+    # - name: Upload Video
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: gource
+    #     path: output/gource.mp4
